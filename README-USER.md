@@ -1,3 +1,5 @@
+
+```markdown
 # TuneLink Backend
 
 Ce README fournit des instructions détaillées pour cloner, déployer et développer le projet TuneLink Backend à l'aide de VS Code et des Dev Containers.
@@ -30,8 +32,8 @@ Avant de commencer, assurez-vous d'avoir installé les outils suivants :
 Pour cloner le projet, exécutez la commande suivante dans votre terminal :
 
 ```bash
-git clone https://github.com/hananeYaya/tuneLink-backend.git
-cd tuneLink-backend
+git clone https://github.com/joelkemkeng/event_connect_back_end_api_python.git
+cd event_connect_back_end_api_python
 ```
 
 ## Configuration de l'environnement de développement
@@ -59,7 +61,7 @@ Le conteneur va se construire automatiquement avec toutes les dépendances néce
 ## Structure du projet
 
 ```
-projet-racine/
+event_connect_back_end_api_python/  # Répertoire racine du projet après clonage
 ├── .devcontainer/                # Configuration Dev Container
 │   ├── devcontainer.json        # Configuration VS Code et conteneur
 │   └── docker-compose.yml       # Configuration des services
@@ -77,6 +79,7 @@ projet-racine/
 │   ├── tests/                # Tests unitaires et d'intégration
 │   ├── .env.example          # Exemple de fichier d'environnement
 │   └── requirements.txt      # Dépendances Python
+├── Dockerfile.backend        # Dockerfile pour le backend
 └── docker-compose.yml        # Configuration Docker Compose racine
 ```
 
@@ -103,7 +106,7 @@ Le projet utilise VS Code Dev Containers, ce qui signifie que tout l'environneme
 
 1. **Démarrage du développement** :
    - Ouvrez VS Code
-   - Ouvrez le dossier du projet
+   - Ouvrez le dossier du projet (répertoire racine après clonage)
    - VS Code détectera automatiquement la configuration Dev Container
    - Cliquez sur "Reopen in Container" quand proposé
 
@@ -114,13 +117,18 @@ Le projet utilise VS Code Dev Containers, ce qui signifie que tout l'environneme
    - Les suggestions de Copilot sont disponibles
 
 3. **Exécution de l'application** :
+   Pour lancer l'application depuis le répertoire racine :
    ```bash
-   uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+   cd backend && uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+   ```
+   Ou en utilisant Docker Compose (depuis le répertoire racine) :
+   ```bash
+   docker-compose up
    ```
 
 4. **Exécution des tests** :
    ```bash
-   pytest
+   cd backend && pytest
    ```
 
 ## Documentation API
@@ -145,22 +153,24 @@ L'API est documentée automatiquement et accessible via :
    - Assurez-vous que Docker Desktop a suffisamment de ressources
    - Essayez de reconstruire avec : "Remote-Containers: Rebuild Container"
 
-3. **Problèmes de permissions** :
+3. **Problèmes d'importation des modules Python** :
+   - Si vous rencontrez des erreurs du type "No module named 'app'", assurez-vous d'exécuter les commandes depuis le bon répertoire
+   - Pour les commandes uvicorn, exécutez-les depuis le répertoire `backend`
+   - Pour Docker Compose, la commande correcte est configurée dans le fichier docker-compose.yml
+
+4. **Problèmes de permissions** :
    - Le conteneur s'exécute en tant que root par défaut
    - Si vous rencontrez des problèmes, vérifiez les permissions des fichiers
-
-4. **VS Code n'ouvre que le dossier backend** :
-   - C'est normal car le `workspaceFolder` dans `devcontainer.json` est configuré sur `/app`
-   - Pour accéder aux autres dossiers, utilisez l'explorateur de fichiers VS Code
-   - Vous pouvez modifier le `workspaceFolder` dans `devcontainer.json` si nécessaire
 
 ### Obtenir de l'aide
 
 Si vous rencontrez des problèmes :
 
-1. Consultez les [issues](https://github.com/hananeYaya/tuneLink-backend/issues) existantes
+1. Consultez les [issues](https://github.com/joelkemkeng/event_connect_back_end_api_python/issues) existantes
 2. Créez une nouvelle issue avec :
    - Description détaillée du problème
    - Logs d'erreur
    - Étapes pour reproduire
-   - Configuration de votre environnement 
+   - Configuration de votre environnement
+```
+
