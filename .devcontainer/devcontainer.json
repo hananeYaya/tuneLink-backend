@@ -13,24 +13,21 @@
         "vscode": {
             "settings": {
                 "python.defaultInterpreterPath": "/usr/local/bin/python",
-                "python.linting.enabled": true,
-                "python.linting.pylintEnabled": true,
-                "python.linting.flake8Enabled": true,
-                "python.formatting.provider": "black",
-                "python.formatting.blackPath": "/usr/local/bin/black",
-                "editor.formatOnSave": true,
-                "editor.rulers": [88],
+                //"python.linting.enabled": false,
+                //"python.linting.pylintEnabled": false,
+                //"python.linting.flake8Enabled": false,
+                //"python.formatting.provider": "none",
+                "editor.formatOnSave": false,
+                "editor.rulers": [],
                 "[python]": {
                     "editor.codeActionsOnSave": {
-                        "source.organizeImports": true
+                       // "source.organizeImports": false
                     }
                 }
             },
             "extensions": [
                 "ms-python.python",
                 "ms-python.vscode-pylance",
-                "matangover.mypy",
-                "njpwerner.autodocstring",
                 "ms-azuretools.vscode-docker",
                 "github.copilot",
                 "yzhang.markdown-all-in-one"
@@ -40,5 +37,6 @@
     
     "remoteUser": "root",
     
-    "postCreateCommand": "pip install black flake8 isort mypy pylint"
+    //"postCreateCommand": "pip install black flake8 isort mypy pylint"
+    "postCreateCommand": ""
 }
