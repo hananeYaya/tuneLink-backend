@@ -6,6 +6,7 @@ Ce guide complet fournit toutes les informations nécessaires pour cloner, confi
 
 - [TuneLink Backend](#tunelink-backend)
   - [Table des matières](#table-des-matières)
+  - [Accès à pgAdmin](#accès-à-pgadmin)
   - [Prérequis](#prérequis)
   - [Clonage du projet](#clonage-du-projet)
   - [Configuration de l'environnement](#configuration-de-lenvironnement)
@@ -34,6 +35,49 @@ Ce guide complet fournit toutes les informations nécessaires pour cloner, confi
       - [Docker Compose](#docker-compose)
       - [VS Code Dev Containers](#vs-code-dev-containers)
     - [Obtenir de l'aide](#obtenir-de-laide)
+
+## Accès à pgAdmin
+
+Le projet inclut pgAdmin4 pour gérer la base de données PostgreSQL. Voici comment y accéder :
+
+1. **Démarrez les conteneurs** :
+   ```bash
+   docker-compose up -d
+   ```
+
+2. **Accédez à pgAdmin** dans votre navigateur :
+   - URL : http://localhost:5050
+
+3. **Connectez-vous à pgAdmin** :
+   - Email : admin@hetic.eu
+   - Mot de passe : admin
+
+4. **Connectez-vous au serveur de base de données** :
+   - Le serveur est pré-configuré et devrait apparaître automatiquement
+   - Si vous devez le configurer manuellement :
+     - Host : db
+     - Port : 5432
+     - Maintenance database : mobile_musician
+     - Username : postgres
+     - Password : postgres
+
+5. **Navigation dans pgAdmin** :
+   Pour accéder aux tables de la base de données, suivez cette arborescence dans le panneau de gauche :
+   ```
+   Servers
+   └── Mobile Musician DB
+       └── Databases
+           └── mobile_musician
+               └── Schemas
+                   └── public
+                       └── Tables
+   ```
+   
+   Vous pouvez alors :
+   - Voir la structure des tables en cliquant sur une table
+   - Exécuter des requêtes SQL en utilisant l'outil "Query Tool" (icône avec un symbole SQL)
+   - Gérer les données (insérer, modifier, supprimer) via l'interface graphique
+   - Exporter/importer des données
 
 ## Prérequis
 
