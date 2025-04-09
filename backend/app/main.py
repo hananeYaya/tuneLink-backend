@@ -1,122 +1,118 @@
 # Fichier principal - Point d'entrée de l'application FastAPI
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
-from fastapi import FastAPI, Request
+# Imports FastAPI
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.openapi.docs import (
-    get_redoc_html,
-    get_swagger_ui_html,
-)
+from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
-# Importation de nos configurations depuis le fichier config.py
+
+
+
+
+# import outils dependance reseau
+from fastapi import FastAPI, Request, status
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from fastapi.responses import JSONResponse
+
+
+
+
+
+# Imports de nos modules
+from app.api.router import api_router
 from app.config import settings
 
+
+
+
+
+
+# pour le middleware
+from app.middlewares.normalized_response import NormalizedResponseMiddleware
+
+
+
+
+#############################################
+# pour le status code
+from fastapi.exception_handlers import http_exception_handler, request_validation_exception_handler
+from fastapi.exceptions import RequestValidationError
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
+from app.schemas.common import StatusCode
+#####################################################
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+#########################################################
 # Création de l'instance de l'application FastAPI
+#########################################################
 app = FastAPI(
     title="Mobile Musician API",
     description="""
-# API Mobile Musician 🎵
+                # API Mobile Musician 🎵
 
-API pour l'application Mobile Musician - Mise en relation de musiciens.
+                API pour l'application Mobile Musician - Mise en relation de musiciens.
 
-## Fonctionnalités
+                ## Fonctionnalités
 
-### Utilisateurs 👤
+                ### Utilisateurs 👤
 
-* **Inscription** : Créer un nouveau compte
-* **Connexion** : Authentification sécurisée
-* **Profil** : Gérer les informations personnelles
-* **Préférences** : Instruments et genres musicaux
+                * **Inscription** : Créer un nouveau compte
+                * **Connexion** : Authentification sécurisée
+                * **Profil** : Gérer les informations personnelles
+                * **Préférences** : Instruments et genres musicaux
 
-### Événements 🎪
+                ### Événements 🎪
 
-* **Création** : Organiser des événements musicaux
-* **Recherche** : Trouver des événements par lieu/date
-* **Participation** : Rejoindre des événements
-* **Filtres** : Par type, genre musical, etc.
+                * **Création** : Organiser des événements musicaux
+                * **Recherche** : Trouver des événements par lieu/date
+                * **Participation** : Rejoindre des événements
+                * **Filtres** : Par type, genre musical, etc.
 
-### Messagerie 💬
+                ### Messagerie 💬
 
-* **Conversations** : Échanger avec d'autres musiciens
-* **Notifications** : Alertes pour nouveaux messages
-* **Groupes** : Discussions pour les événements
+                * **Conversations** : Échanger avec d'autres musiciens
+                * **Notifications** : Alertes pour nouveaux messages
+                * **Groupes** : Discussions pour les événements
 
-### Géolocalisation 🗺️
+                ### Géolocalisation 🗺️
 
-* **Proximité** : Trouver des musiciens proches
-* **Carte** : Visualiser les événements
-* **Filtres** : Par distance et disponibilité
-
-## Authentification 🔐
-
-Cette API utilise JWT (JSON Web Tokens) pour l'authentification. 
-Pour accéder aux endpoints protégés :
-
-1. Connectez-vous via `/api/v1/auth/login`
-2. Utilisez le token reçu dans le header `Authorization`
-
-## Environnements
-
-* **Production** : https://api.mobile-musician.com
-* **Staging** : https://staging.mobile-musician.com
-* **Local** : http://localhost:8000
-
-## Support
-
-Pour toute question ou problème :
-* 📧 Email : support@mobile-musician.com
-* 💻 Github : https://github.com/hananeYaya/tuneLink-backend.git
+                * **Proximité** : Trouver des musiciens proches
+                * **Carte** : Visualiser les événements
+                * **Filtres** : Par distance et disponibilité
     """,
     version="0.1.0",
-    terms_of_service="https://mobile-musician.com/terms/",
-    contact={
-        "name": "Support API Mobile Musician",
-        "url": "https://mobile-musician.com/support",
-        "email": "support@mobile-musician.com",
-    },
-    license_info={
-        "name": "Apache 2.0",
-        "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
-    },
-    openapi_tags=[
-        {
-            "name": "Authentification",
-            "description": "Opérations d'authentification et gestion des tokens.",
-        },
-        {
-            "name": "Utilisateurs",
-            "description": "Gestion des profils utilisateurs et préférences.",
-        },
-        {
-            "name": "Événements",
-            "description": "Création et gestion des événements musicaux.",
-        },
-        {
-            "name": "Messages",
-            "description": "Système de messagerie entre utilisateurs.",
-        },
-        {
-            "name": "Notifications",
-            "description": "Gestion des notifications système et personnalisées.",
-        },
-        {
-            "name": "Instruments",
-            "description": "Gestion des instruments de musique.",
-        },
-        {
-            "name": "Genres",
-            "description": "Gestion des genres musicaux.",
-        },
-    ],
     docs_url=None,
     redoc_url=None,
     openapi_url="/openapi.json",
 )
 
-# Configuration des CORS (Cross-Origin Resource Sharing)
+#########################################################
+
+
+
+
+
+
+
+#########################################################
+# Configuration des CORS
+#########################################################
 if settings.BACKEND_CORS_ORIGINS:
     app.add_middleware(
         CORSMiddleware,
@@ -125,65 +121,37 @@ if settings.BACKEND_CORS_ORIGINS:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+#########################################################
 
+
+
+
+
+
+#########################################################
 # Montage des fichiers statiques
+#########################################################
 app.mount("/static", StaticFiles(directory="static"), name="static")
+#########################################################
 
 
-def custom_openapi() -> Dict[str, Any]:
-    """
-    Personnalisation du schéma OpenAPI avec des informations supplémentaires.
-    """
-    schema = getattr(app, "openapi_schema", None)
-    if schema is not None:
-        assert isinstance(schema, Dict)
-        return dict(schema)
-
-    openapi_schema = get_openapi(
-        title=app.title,
-        version=app.version,
-        description=app.description,
-        routes=app.routes,
-        tags=app.openapi_tags,
-    )
-
-    # Ajout de la version OpenAPI
-    openapi_schema["openapi"] = "3.0.2"
-
-    # Personnalisation du schéma
-    openapi_schema["info"]["x-logo"] = {
-        "url": "/static/logo.png",
-        "backgroundColor": "#FFFFFF",
-        "altText": "Mobile Musician Logo",
-    }
-
-    # Ajout des composants de sécurité
-    openapi_schema["components"] = {
-        "securitySchemes": {
-            "bearerAuth": {
-                "type": "http",
-                "scheme": "bearer",
-                "bearerFormat": "JWT",
-                "description": "Entrez votre token JWT ici",
-            }
-        },
-        "responses": {
-            "UnauthorizedError": {"description": "Token d'accès manquant ou invalide"}
-        },
-    }
-
-    # Sécurité globale
-    openapi_schema["security"] = [{"bearerAuth": []}]
-
-    app.openapi_schema = openapi_schema
-    return openapi_schema
 
 
-# Configuration du schéma OpenAPI
-app.openapi = custom_openapi  # type: ignore
+
+#########################################################
+# Inclusion des routes API endpoint
+#########################################################
+app.include_router(api_router, prefix="/api/v1")
+#########################################################
 
 
-# Routes pour la documentation
+
+
+
+
+#########################################################
+# Routes pour la documentation Swagger UI
+#########################################################
 @app.get("/docs", include_in_schema=False)
 async def custom_swagger_ui_html() -> Any:
     """
@@ -192,50 +160,44 @@ async def custom_swagger_ui_html() -> Any:
     html_content = get_swagger_ui_html(
         openapi_url="/openapi.json",
         title=f"{app.title} - Documentation Swagger",
-        oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,
         swagger_js_url="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui-bundle.js",
         swagger_css_url="https://unpkg.com/swagger-ui-dist@5.11.0/swagger-ui.css",
         swagger_ui_parameters={
-            "configUrl": None,
             "defaultModelsExpandDepth": -1,
-            "displayOperationId": True,
-            "docExpansion": "none",
+            "docExpansion": "list",  # Changé pour une meilleure vue initiale
             "filter": True,
-            "layout": "BaseLayout",
-            "operationsSorter": "alpha",
-            "showExtensions": True,
-            "showCommonExtensions": True,
-            "syntaxHighlight.theme": "monokai",
             "tryItOutEnabled": True,
             "persistAuthorization": True,
-            "displayRequestDuration": True,
-            "deepLinking": True,
         },
     )
     
-    # Convertir le contenu HTML en string pour le modifier
+    # Ajouter les liens vers les autres documentations
     html_str = html_content.body.decode("utf-8")
-    
-    # Insérer les liens vers ReDoc et RapiDoc dans l'en-tête
     doc_links_html = '''
     <div style="position: absolute; top: 100px; right: 50px; z-index: 1000; display: flex; gap: 30px;">
         <a href="/rapidoc" style="color: white; text-decoration: none; font-weight: bold; font-size: 25px; padding: 5px 10px; border-radius: 4px; background-color: #60d22c;">RapiDoc</a>
         <a href="/redoc" style="color: white; text-decoration: none; font-weight: bold; font-size: 25px; padding: 5px 10px; border-radius: 4px; background-color: #3033e8;">ReDoc</a>
     </div>
     '''
-    
-    # Injecter nos liens dans le HTML juste après l'ouverture de la balise body
     modified_html = html_str.replace("<body>", f"<body>\n{doc_links_html}")
     
-    # Retourner le HTML modifié
+    # Retourner la page HTML modifiée
     return HTMLResponse(content=modified_html)
 
+####################################################
 
+
+
+
+
+
+
+####################################################
+# Routes pour la documentation redoc
+####################################################
 @app.get("/redoc", include_in_schema=False)
 async def redoc_html() -> Any:
-    """
-    Route personnalisée pour la documentation ReDoc.
-    """
+    """Route pour la documentation ReDoc."""
     return get_redoc_html(
         openapi_url="/openapi.json",
         title=f"{app.title} - Documentation ReDoc",
@@ -243,93 +205,323 @@ async def redoc_html() -> Any:
         redoc_favicon_url="/static/favicon.png",
     )
 
+####################################################
 
+
+
+
+
+
+
+
+####################################################
+# Routes pour la documentation RapiDoc
+####################################################
 @app.get("/rapidoc", include_in_schema=False)
 async def rapidoc_html() -> HTMLResponse:
-    """
-    Route personnalisée pour la documentation RapiDoc.
-    """
+    """Route pour la documentation RapiDoc."""
     return HTMLResponse(
         """
-<!doctype html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <script type="module" src="https://unpkg.com/rapidoc/dist/rapidoc-min.js"></script>
-    <link rel="icon" type="image/png" href="/static/favicon.png"/>
-    <title>Mobile Musician API - Documentation RapiDoc</title>
-    <style>
-        rapi-doc {
-            width: 100%;
-            height: 100vh;
-            display: flex;
-        }
-    </style>
-</head>
-<body>
-    <rapi-doc
-        spec-url="/openapi.json"
-        theme="dark"
-        bg-color="#1a1a1a"
-        text-color="#fafafa"
-        primary-color="#00ff00"
-        render-style="read"
-        show-header="false"
-        show-info="true"
-        allow-authentication="true"
-        allow-server-selection="false"
-        allow-search="true"
-        allow-advanced-search="true"
-        allow-try="true"
-        regular-font="Roboto, sans-serif"
-        mono-font="Roboto Mono, monospace"
-    > </rapi-doc>
-</body>
-</html>
+        <!doctype html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <script type="module" src="https://unpkg.com/rapidoc/dist/rapidoc-min.js"></script>
+            <link rel="icon" type="image/png" href="/static/favicon.png"/>
+            <title>Mobile Musician API - Documentation RapiDoc</title>
+            <style>
+                rapi-doc {
+                    width: 100%;
+                    height: 100vh;
+                    display: flex;
+                }
+            </style>
+        </head>
+        <body>
+            <rapi-doc
+                spec-url="/openapi.json"
+                theme="dark"
+                bg-color="#1a1a1a"
+                text-color="#fafafa"
+                primary-color="#00ff00"
+                render-style="read"
+                show-header="false"
+                show-info="true"
+                allow-authentication="true"
+                allow-try="true"
+            > </rapi-doc>
+        </body>
+        </html>
         """
     )
 
+####################################################
 
+
+
+
+
+
+
+
+
+####################################################
 # Route racine - accessible à l'URL de base de l'API
+####################################################
 @app.get("/", tags=["Informations"])
 async def root() -> Dict[str, str]:
     """
     Page d'accueil de l'API Mobile Musician.
-
-    Returns:
-        dict: Un message de bienvenue et des liens utiles
-
-    Examples:
-        >>> response = await root()
-        >>> print(response)
-        {
-            "message": "Bienvenue sur l'API Mobile Musician",
-            "documentation": "/docs",
-            "rapidoc": "/rapidoc",
-            "redoc": "/redoc",
-            "github": "https://github.com/votre-organisation/mobile-musician"
-        }
     """
     return {
         "message": "Bienvenue sur l'API Mobile Musician",
         "documentation": "/docs",
         "rapidoc": "/rapidoc",
         "redoc": "/redoc",
-        "github": "https://github.com/votre-organisation/mobile-musician",
+        "github": "https://github.com/joelkemkeng/event_connect_back_end_api_python",
+    }
+####################################################
+
+
+
+
+
+
+
+
+####################################################
+# Personnalisation du schéma OpenAPI
+####################################################
+def custom_openapi() -> Dict[str, Any]:
+    
+    
+    """Personnalisation du schéma OpenAPI avec nos définitions de composants."""
+    # Obtenir le schéma OpenAPI
+    schema = getattr(app, "openapi_schema", None)
+    
+    # Si le schéma existe, le retourner
+    if schema is not None:
+        return dict(schema)
+
+    # Obtenir le schéma OpenAPI
+    openapi_schema = get_openapi(
+        title=app.title,
+        version=app.version,
+        description=app.description,
+        routes=app.routes,
+    )
+
+    # Ajout de la version OpenAPI
+    openapi_schema["openapi"] = "3.0.2"
+
+    # S'assurer que la section components existe
+    if "components" not in openapi_schema:
+        openapi_schema["components"] = {}
+    
+    # S'assurer que la section schemas existe
+    if "schemas" not in openapi_schema["components"]:
+        openapi_schema["components"]["schemas"] = {}
+        
+
+    # Ajouter le schéma de statut
+    openapi_schema["components"]["schemas"]["StatusCode"] = {
+        "type": "string",
+        "enum": ["success", "error", "warning", "info"],
+        "description": "Statut de la réponse API"
+    }
+    
+    # Ajouter le schéma de réponse standard
+    openapi_schema["components"]["schemas"]["StandardResponse"] = {
+        "type": "object",
+        "properties": {
+            "status": {
+                "$ref": "#/components/schemas/StatusCode"
+            },
+            "code": {
+                "type": "integer",
+                "description": "Code HTTP de la réponse"
+            },
+            "message": {
+                "type": "string",
+                "description": "Message descriptif de la réponse"
+            },
+            "data": {
+                "type": "object",
+                "nullable": True,
+                "description": "Données de la réponse (si succès)"
+            },
+            "errors": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "field": {
+                            "type": "string",
+                            "description": "Champ concerné par l'erreur"
+                        },
+                        "message": {
+                            "type": "string",
+                            "description": "Description de l'erreur"
+                        },
+                        "type": {
+                            "type": "string",
+                            "description": "Type d'erreur"
+                        }
+                    }
+                },
+                "nullable": True,
+                "description": "Liste des erreurs (si échec)"
+            }
+        },
+        "required": ["status", "code", "message"]
+    }
+    
+    # Ajouter la sécurité JWT
+    openapi_schema["components"]["securitySchemes"] = {
+        "bearerAuth": {
+            "type": "http",
+            "scheme": "bearer",
+            "bearerFormat": "JWT",
+            "description": "Entrez votre token JWT ici",
+        }
+    }
+    
+    # Ajouter la réponse pour les erreurs d'authentification
+    openapi_schema["components"]["responses"] = {
+        "UnauthorizedError": {
+            "description": "Token d'accès manquant ou invalide",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "allOf": [
+                            {"$ref": "#/components/schemas/StandardResponse"},
+                            {
+                                "example": {
+                                    "status": "error",
+                                    "code": 401,
+                                    "message": "Non autorisé - Token invalide ou expiré",
+                                    "data": None,
+                                    "errors": [{"message": "Token JWT invalide ou expiré"}]
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
     }
 
+    # Ajouter la sécurité JWT
+    openapi_schema["security"] = [{"bearerAuth": []}]
 
-# Route de vérification de l'état de l'API
-@app.get("/health", tags=["Informations"])
-async def health_check() -> Dict[str, str]:
-    """
-    Endpoint de vérification de l'état de l'API.
+    # Ajouter le schéma OpenAPI à l'instance de l'application
+    app.openapi_schema = openapi_schema
+    
+    # Retourner le schéma OpenAPI
+    return openapi_schema
 
-    Returns:
-        dict: Le statut de l'API
+####################################################
 
-    Examples:
-        >>> response = await health_check()
-        >>> assert response["status"] == "ok"
-    """
-    return {"status": "ok"}
+
+
+
+
+
+
+
+####################################################
+# Après les autres middlewares
+####################################################
+app.add_middleware(NormalizedResponseMiddleware)
+####################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+#####################################################
+# pour le status code
+#####################################################
+
+@app.exception_handler(StarletteHTTPException)
+async def custom_http_exception_handler(request: Request, exc: StarletteHTTPException):
+    """Gère les exceptions HTTP avec notre format de réponse normalisé."""
+    # Vérifier si l'exception a déjà un détail normalisé
+    if isinstance(exc.detail, dict) and "status" in exc.detail and "code" in exc.detail:
+        return JSONResponse(
+            content=exc.detail,
+            status_code=exc.status_code,
+            headers=exc.headers
+        )
+    
+    # Normaliser la réponse d'erreur
+    content = {
+        "status": StatusCode.ERROR,
+        "code": exc.status_code,
+        "message": str(exc.detail),
+        "data": None,
+        "errors": None
+    }
+    
+    return JSONResponse(
+        content=content,
+        status_code=exc.status_code,
+        headers=exc.headers
+    )
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """Gère les erreurs de validation Pydantic avec notre format normalisé."""
+    # Formater les erreurs de validation
+    errors = []
+    for error in exc.errors():
+        location = error.get("loc", [])
+        field = location[-1] if len(location) > 0 else "unknown"
+        error_type = error.get("type", "")
+        
+        errors.append({
+            "field": field,
+            "type": error_type,
+            "message": error.get("msg", "Erreur de validation")
+        })
+    
+    content = {
+        "status": StatusCode.ERROR,
+        "code": status.HTTP_422_UNPROCESSABLE_ENTITY,
+        "message": "Erreur de validation des données",
+        "data": None,
+        "errors": errors
+    }
+    
+    return JSONResponse(
+        content=content,
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY
+    )
+
+#####################################################
+# FIN pour le status code
+#####################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+app.openapi = custom_openapi
