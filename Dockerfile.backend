@@ -20,9 +20,11 @@ RUN pip install --upgrade pip \
 # Ne pas copier les fichiers ici pour le développement
 # Le montage de volume s'en chargera
 
-# Copier le script de démarrage
-COPY backend/scripts/start.sh /start.sh
-RUN chmod +x /start.sh
+  # Copier le script de démarrage
+  COPY backend/scripts/start.sh /start.sh
+  # Corriger les fins de ligne
+  RUN sed -i 's/\r$//' /start.sh 
+  RUN chmod +x /start.sh
 
 # Exposer le port
 EXPOSE 8000
