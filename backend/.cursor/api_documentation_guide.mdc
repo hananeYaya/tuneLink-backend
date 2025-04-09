@@ -9,13 +9,13 @@ Ce guide explique comment configurer et utiliser efficacement les différentes i
 
 ## Table des matières
 
-1. [Configuration des interfaces de documentation](#configuration-des-interfaces-de-documentation)
-   - [Swagger UI](#swagger-ui)
-   - [ReDoc](#redoc)
-   - [RapiDoc](#rapidoc)
-2. [Bonnes pratiques pour la documentation des endpoints](#bonnes-pratiques-pour-la-documentation-des-endpoints)
-3. [Exemples pratiques](#exemples-pratiques)
-4. [Dépannage](#dépannage)
+1. [Configuration des interfaces de documentation](mdc:#configuration-des-interfaces-de-documentation)
+   - [Swagger UI](mdc:#swagger-ui)
+   - [ReDoc](mdc:#redoc)
+   - [RapiDoc](mdc:#rapidoc)
+2. [Bonnes pratiques pour la documentation des endpoints](mdc:#bonnes-pratiques-pour-la-documentation-des-endpoints)
+3. [Exemples pratiques](mdc:#exemples-pratiques)
+4. [Dépannage](mdc:#dépannage)
 
 ## Configuration des interfaces de documentation
 
