@@ -20,10 +20,20 @@ RUN pip install --upgrade pip \
 # Ne pas copier les fichiers ici pour le développement
 # Le montage de volume s'en chargera
 
+  # Copier le script de démarrage
+  COPY backend/scripts/start.sh /start.sh
+  # Corriger les fins de ligne
+  RUN sed -i 's/\r$//' /start.sh 
+  RUN chmod +x /start.sh
+
 # Exposer le port
 EXPOSE 8000
 
 # Commande par défaut (peut être remplacée dans docker-compose.yml)
 #CMD ["uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "8000"]
-CMD ["bash", "-c", "cd backend && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"]
+#CMD ["bash", "-c", "cd backend && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"]
 #CMD ["bash", "-c", "cd backend && python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"]
+
+# Utiliser le script de démarrage comme point d'entrée
+# Essayez
+ENTRYPOINT ["bash", "/start.sh"]
