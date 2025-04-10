@@ -2,6 +2,8 @@
 
 from app.models.base import Base  # Ce fichier doit maintenant exister
 from app.models.user import User  # Importe tes autres modèles ici
+from app.models.message import Message  # <- Ajoute ce modèle
 
 
-__all__ = ["User", "Event", "event_participants"]
+
+__all__ = ["Base", "User", "Message"]

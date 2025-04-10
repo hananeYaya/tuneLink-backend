@@ -14,10 +14,10 @@ from app.schemas.message import (
     MessageDeleteResponse
 )
 
-router = APIRouter()
+router = APIRouter(prefix="/messages", tags=["Messages"])
 
 @router.post(
-    "/messages",
+    "/",
     status_code=status.HTTP_201_CREATED,
     response_model=MessageResponse,
     summary="Envoyer un message",
@@ -42,7 +42,7 @@ async def send_message(message: MessageCreate, db: Session = Depends(get_db)) ->
 
 
 @router.get(
-    "/messages/{user1_id}/{user2_id}",
+    "/{user1_id}/{user2_id}",
     response_model=MessageListResponse,
     summary="Récupérer les messages entre deux utilisateurs",
     description="Retourne tous les messages échangés entre deux utilisateurs."
@@ -61,13 +61,13 @@ async def get_messages(user1_id: UUID, user2_id: UUID, db: Session = Depends(get
 
 
 @router.delete(
-    "/messages/{message_id}",
+    "/{message_id}",
     response_model=MessageDeleteResponse,
     summary="Supprimer un message",
     description="Supprime un message par son ID."
 )
 async def delete_message(message_id: UUID, db: Session = Depends(get_db)) -> MessageDeleteResponse:
-    message = db.query(Message).get(message_id)
+    message = db.get(Message, message_id)
     if not message:
         raise HTTPException(status_code=404, detail="Message introuvable")
 

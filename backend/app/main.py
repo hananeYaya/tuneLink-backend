@@ -147,7 +147,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(api_router, prefix="/api/v1")
 
 #pour la messagerie 
-app.include_router(message.router, tags=["Messagerie"]) 
+app.include_router(message.router, prefix="/messagerie",) 
 #########################################################
 
 

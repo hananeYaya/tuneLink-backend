@@ -1,5 +1,6 @@
 from sqlalchemy import Column, String, DateTime, Boolean, Table, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 import uuid
 from datetime import datetime
 from app.models.base import Base
@@ -14,5 +15,11 @@ class User(Base):
     password_hash = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     is_active = Column(Boolean, default=True)
+
+
+     # Relations
+    sent_messages = relationship("Message", back_populates="sender", foreign_keys="[Message.sender_id]")
+    received_messages = relationship("Message", back_populates="receiver", foreign_keys="[Message.receiver_id]")
+
 
    
