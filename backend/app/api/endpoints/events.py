@@ -25,7 +25,7 @@ def create_event(
     print("=== CRÉATION ÉVÉNEMENT SANS AUTH ===")
 
     # ✅ ID réel d'un utilisateur existant (extrait du token JWT de test)
-    fake_user_id = UUID("50d5987d-c7a7-4633-8ec3-6871c8fcdd01")
+    fake_user_id = UUID("002fb3d7-25e3-4d4a-b106-c70fe37427a0")
 
     new_event = Event(
         id=uuid4(),
