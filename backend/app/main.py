@@ -44,8 +44,11 @@ from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.schemas.common import StatusCode
+#pour la messagerie
+from app.api.endpoints import message  
 #####################################################
  
+
 
 
 
@@ -142,6 +145,9 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # Inclusion des routes API endpoint
 #########################################################
 app.include_router(api_router, prefix="/api/v1")
+
+#pour la messagerie 
+app.include_router(message.router, tags=["Messagerie"]) 
 #########################################################
 
 

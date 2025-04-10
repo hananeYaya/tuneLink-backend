@@ -1,14 +1,11 @@
-# Exporter les schémas pour qu'ils soient disponibles directement depuis app.schemas
-from app.schemas.user import UserCreate, UserResponse, UserCreateResponse, UserResponseData, UserError
+# app/schemas/__init__.py
+from app.schemas.user import UserCreate, UserResponse, UserCreateResponse, UserResponseData
 from app.schemas.common import StatusCode, SuccessResponse, ErrorResponse
 
+
 __all__ = [
-    "UserCreate", 
-    "UserResponse",
-    "UserCreateResponse",
-    "UserResponseData", 
-    "UserError",
-    "StatusCode",
-    "SuccessResponse",
-    "ErrorResponse"
+    # Utilisateurs
+    "UserCreate", "UserResponse", "UserCreateResponse", "UserResponseData",
+    # Communs
+    "StatusCode", "SuccessResponse", "ErrorResponse"
 ]
