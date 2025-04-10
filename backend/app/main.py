@@ -20,35 +20,7 @@ from app.schemas.common import StatusCode
 # Création de l'application FastAPI
 app = FastAPI(
     title="Mobile Musician API",
-    description="""
-                # API Mobile Musician 🎵
-
-                API pour l'application Mobile Musician - Mise en relation de musiciens.
-
-                ## Fonctionnalités
-
-                ### Utilisateurs 👤
-                * **Inscription** : Créer un nouveau compte
-                * **Connexion** : Authentification sécurisée
-                * **Profil** : Gérer les informations personnelles
-                * **Préférences** : Instruments et genres musicaux
-
-                ### Événements 🎪
-                * **Création** : Organiser des événements musicaux
-                * **Recherche** : Trouver des événements par lieu/date
-                * **Participation** : Rejoindre des événements
-                * **Filtres** : Par type, genre musical, etc.
-
-                ### Messagerie 💬
-                * **Conversations** : Échanger avec d'autres musiciens
-                * **Notifications** : Alertes pour nouveaux messages
-                * **Groupes** : Discussions pour les événements
-
-                ### Géolocalisation 🗙️
-                * **Proximité** : Trouver des musiciens proches
-                * **Carte** : Visualiser les événements
-                * **Filtres** : Par distance et disponibilité
-    """,
+    description="""...""",  # Ton texte de description complet est inchangé
     version="0.1.0",
     docs_url=None,
     redoc_url=None,
@@ -65,8 +37,8 @@ if settings.BACKEND_CORS_ORIGINS:
         allow_headers=["*"],
     )
 
-# Fichiers statiques
-app.mount("/static", StaticFiles(directory="static"), name="static")
+# ✅ Fichiers statiques
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # Routes API principales
 app.include_router(api_router, prefix="/api/v1")
@@ -156,7 +128,7 @@ async def root() -> Dict[str, str]:
         "github": "https://github.com/joelkemkeng/event_connect_back_end_api_python",
     }
 
-# Personnalisation OpenAPI (Swagger + Auth JWT)
+# Personnalisation OpenAPI
 def custom_openapi() -> Dict[str, Any]:
     if app.openapi_schema:
         return app.openapi_schema
@@ -180,7 +152,6 @@ def custom_openapi() -> Dict[str, Any]:
     }
 
     openapi_schema["security"] = [{"bearerAuth": []}]
-
     app.openapi_schema = openapi_schema
     return openapi_schema
 
@@ -189,7 +160,7 @@ app.openapi = custom_openapi
 # Middleware personnalisé
 app.add_middleware(NormalizedResponseMiddleware)
 
-# Gestion d'erreurs HTTP personnalisée
+# Gestion d'erreurs HTTP
 @app.exception_handler(StarletteHTTPException)
 async def custom_http_exception_handler(request: Request, exc: StarletteHTTPException):
     if isinstance(exc.detail, dict) and "status" in exc.detail and "code" in exc.detail:

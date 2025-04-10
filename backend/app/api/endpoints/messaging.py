@@ -20,6 +20,7 @@ def create_conversation(
     new_conversation = Conversation(
         id=uuid4(),
         name=conversation.name,
+        type=conversation.type,
         created_at=datetime.utcnow()
     )
     db.add(new_conversation)
