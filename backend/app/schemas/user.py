@@ -44,7 +44,8 @@ class UserInDB(UserBase):
     id: UUID
     created_at: datetime
     is_active: bool
-    
+    profile_picture_url: Optional[str] = None  # ✅ Ajout
+
     class Config:
         from_attributes = True
 
@@ -60,11 +61,19 @@ class UserResponseData(BaseModel):
         description="Nom d'utilisateur",
         example="musicien2025"
     )
+    profile_picture_url: Optional[str] = Field(
+        default=None,
+        description="URL de la photo de profil",
+        example="/static/profile_pictures/83e89dc4-b40d-4083-a0b2-1e57bc56c032.png"
+    )
 
-# Pour la compatibilité avec le code existant
 class UserResponse(BaseModel):
     message: str = Field(..., description="Message de confirmation")
     user_id: UUID = Field(..., description="Identifiant unique de l'utilisateur")
+    profile_picture_url: Optional[str] = Field(
+        default=None,
+        description="URL de la photo de profil"
+    )
 
 # Réponses normalisées
 class UserCreateResponse(SuccessResponse[UserResponseData]):
