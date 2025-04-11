@@ -1,4 +1,5 @@
 # backend/app/schemas/event.py
+
 from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
@@ -20,6 +21,7 @@ class EventResponseData(EventBase):
     organizer_id: UUID
     created_at: datetime
     tags: List[str] = []
+    banner_url: Optional[str] = None  # ✅ Ajout de la bannière
 
     class Config:
         from_attributes = True

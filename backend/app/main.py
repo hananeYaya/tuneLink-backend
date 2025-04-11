@@ -40,6 +40,11 @@ if settings.BACKEND_CORS_ORIGINS:
 # ✅ Fichiers statiques
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
+app.mount(
+    "/static/event_banners",
+    StaticFiles(directory="app/static/event_banners"),
+    name="event_banners"
+)
 # Routes API principales
 app.include_router(api_router, prefix="/api/v1")
 

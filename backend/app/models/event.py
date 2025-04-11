@@ -1,5 +1,3 @@
-# backend/app/models/event.py
-
 from sqlalchemy import Column, String, Text, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID, ARRAY
 from sqlalchemy.orm import relationship
@@ -18,6 +16,7 @@ class Event(Base):
     event_date = Column(DateTime, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     tags = Column(ARRAY(String), default=[])
+    banner_url = Column(String, nullable=True)  # ✅ Ajout pour l'URL de la bannière
 
     organizer_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     organizer = relationship("User", back_populates="organized_events")
